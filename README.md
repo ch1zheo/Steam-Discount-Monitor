@@ -27,7 +27,7 @@ pip install -r requirements.txt
    - откройте `https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates`,
    - найдите `"chat":{"id": ...}` в ответе.
 
-3. Скопируйте `.env.example` в `.env` и впишите значения:
+3. Скопируйте `default.env.example` в `.env` и впишите значения:
 
 TELEGRAM_BOT_TOKEN="ТОКЕН БОТА"
 
