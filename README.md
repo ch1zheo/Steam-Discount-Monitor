@@ -27,6 +27,7 @@ pip install -r requirements.txt
 3. Скопируйте `.env.example` в `.env` и впишите значения:
 
 TELEGRAM_BOT_TOKEN="ТОКЕН БОТА"
+
 TELEGRAM_CHAT_ID="ЧАТ АЙДИ ПОЛЬЗОВАТЕЛЯ"
 
 / Запуск
