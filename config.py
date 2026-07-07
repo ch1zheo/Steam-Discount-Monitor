@@ -1,4 +1,4 @@
-# Конфигурация проекта Steam Discount Monitor.
+# Конфигурация проекта Steam Discount Monitor. 
 # Токен, айди канала и юзера с ссылкой на канал в .env - см. .env.example
 
 import os
