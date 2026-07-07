@@ -1,4 +1,4 @@
-# Отправка уведомлений в Telegram через Bot API.
+# Отправка уведомлений в Telegram через Bot API. 
 
 import requests
 import time
