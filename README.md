@@ -90,7 +90,7 @@ Steam Discount Monitor/
 
    python main.py
 
-# Linux (Ubuntu, Devian Based)
+# Linux (Ubuntu, Debian Based)
 
 1. Установите Python и pip, если их ещё нет:
 
