@@ -1,4 +1,4 @@
-# main.py - главный скрипт (асинхронная версия: aiogram + aiohttp).
+# main.py - главный скрипт.
 
 import sys
 import asyncio
@@ -15,8 +15,7 @@ from storage import load_state, save_state, set_discount, remove_discount, shoul
 
 async def collect_all_regions(session: aiohttp.ClientSession) -> dict:
     """Возвращает {appid: {region_code: game_info}} по всем регионам.
-    Регионы опрашиваются ПАРАЛЛЕЛЬНО - раньше (RU -> UA -> KZ последовательно)
-    общее время было суммой времён всех регионов, теперь - временем самого медленного."""
+    Регионы опрашиваются ПАРАЛЛЕЛЬНО"""
     regions_items = list(config.REGIONS.items())
     tasks = [
         fetch_discounted_games(
@@ -172,7 +171,7 @@ async def run_once(session: aiohttp.ClientSession, bot: Bot):
 
 async def main():
     if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_CHAT_ID:
-        print("[main] ОШИБКА: не заданы TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID в .env")
+        print("[main] ОШИБКА: не заданы TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID в default.env.example")
         sys.exit(1)
 
     bot = Bot(
