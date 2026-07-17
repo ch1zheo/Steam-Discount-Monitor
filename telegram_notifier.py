@@ -1,4 +1,4 @@
-# Отправка уведомлений в Telegram через aiogram (асинхронно).
+# Отправка уведомлений в Telegram через aiogram.
 # parse_mode="HTML" задаётся один раз при создании Bot в main.py (DefaultBotProperties),
 # поэтому здесь его указывать не нужно.
 
