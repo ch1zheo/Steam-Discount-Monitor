@@ -1,8 +1,12 @@
 # Steam Discount Monitor
 
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/ch1zheo/Steam-Discount-Monitor/graphs/commit-activity)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Бот, который следит за скидками в Steam сразу в нескольких регионах (RU / UA / KZ), находит новые или изменившиеся скидки, а также ищет **арбитраж** - случаи, когда одна и та же игра в разных регионах стоит по-разному больше заданного порога. Обо всех находках бот пишет в Telegram.
 
-# Как это работает
+## Как это работает
 
 1. **Сбор данных.** Каждые `CHECK_INTERVAL_SECONDS` секунд (по умолчанию - раз в 2 часа) бот параллельно опрашивает поисковый эндпоинт Steam Store для регионов `ru`, `ua`, `kz` и собирает список игр со скидкой (постранично, до `MAX_PAGES_PER_REGION` страниц на регион).
 
@@ -18,7 +22,7 @@
 
 7. Цикл повторяется бесконечно, пока процесс не остановлен.
 
-# Структура
+## Структура
 
 Steam Discount Monitor/
 
@@ -40,81 +44,99 @@ Steam Discount Monitor/
 
 └── state.json                     # Создаётся автоматически после первого прогона
 
-# Установка
+## Установка
 
 Проекту нужен **Python 3.10 или новее**.
 
 Не забывайте перед запуском активировать **окружение** в папке с проектом! (venv\Scripts\activate для Windows, source venv/bin/activate для Linux, macOS)
 
-# Windows
+### Windows
 
 1. Скачайте и установите Python с [python.org](https://www.python.org/downloads/) - при установке обязательно поставьте галочку **"Add python.exe to PATH"**.
 
 2. Откройте PowerShell или CMD в папке проекта и создайте виртуальное окружение:
 
-   - python -m venv venv
-
-   - venv\Scripts\activate
+   ```powershell
+   python -m venv venv
+   venv\Scripts\activate
+   ```
 
 3. Установите зависимости:
 
-   - pip install -r requirements.txt
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
 4. Создайте файл `.env` в корне проекта (см. раздел # Настройка `.env`).
 
 5. Запустите бота:
 
-   - python main.py
+   ```powershell
+   python main.py
+   ```
 
-# Linux (Ubuntu, Debian Based)
+### Linux (Ubuntu, Debian Based)
 
 1. Установите Python и pip, если их ещё нет:
 
-   - sudo apt update
-
-   - sudo apt install python3 python3-venv python3-pip
+   ```bash
+   sudo apt update
+   sudo apt install python3 python3-venv python3-pip
+   ```
 
 2. Перейдите в папку проекта и создайте виртуальное окружение:
 
-   - python3 -m venv venv
-
-   - source venv/bin/activate
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
 3. Установите зависимости:
-
-   - pip install -r requirements.txt
+   
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. Создайте файл `.env` в корне проекта (см. раздел # Настройка `.env`).
 
 5. Запустите бота:
 
-   - python3 main.py
+   ```bash
+   python3 main.py
+   ```
 
    - Чтобы бот продолжал работать после закрытия терминала, можно запустить его через `nohup`, `tmux`/`screen` или оформить как systemd-сервис.
 
-# macOS
+### macOS
 
 1. Установите Python (если его нет) через [Homebrew](https://brew.sh/):
 
-   - brew install python
+   ```bash
+   brew install python
+   ```
 
 2. Перейдите в папку проекта и создайте виртуальное окружение:
 
-   - python3 -m venv venv
-
-   - source venv/bin/activate
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
 
 3. Установите зависимости:
 
-   - pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. Создайте файл `.env` в корне проекта (см. раздел # Настройка `.env`).
 
 5. Запустите бота:
 
-   - python3 main.py
+   ```bash
+   python3 main.py
+   ```
 
-# Настройка `.env`
+## Настройка `.env`
 
 Создайте в корне проекта файл `.env` (по образцу `default.env.example`) со следующими переменными:
 
@@ -130,7 +152,7 @@ Steam Discount Monitor/
 
 Без этих двух переменных бот не запустится и выведет ошибку в консоль.
 
-# Настройка параметров мониторинга
+## Настройка параметров мониторинга
 
 Все параметры находятся в `config.py`:
 
@@ -144,33 +166,7 @@ Steam Discount Monitor/
 
 - `CHECK_INTERVAL_SECONDS` - как часто повторять проверку (по умолчанию 7200 сек = 2 часа).
 
-# Что изменилось в V2.1
-
-- Логика бота работала на python-telegram-bot, в V2.1 переписана под aiogram.
-
-- Первая версия проекта была полностью синхронной: использовала `requests` для HTTP-запросов и обычный `python-telegram-bot`-style POST-запрос для отправки сообщений. Текущая версия переписана на асинхронный стек:
-
-- Регионы опрашиваются **параллельно** через `asyncio.gather` - общее время проверки сократилось примерно в 3 раза
-
-- Одна `aiohttp.ClientSession` на весь процесс, соединения переиспользуются (keep-alive)
-
-- Отправка через `aiogram.Bot.send_message`, с обработкой `TelegramAPIError` 
-
-- `asyncio.sleep(...)` - не блокирует event loop 
-
-- Курсы всех регионов одной игры запрашиваются параллельно 
-
-- Добавлен `asyncio.Lock`, защищающий кэш курсов от гонки при параллельных запросах 
-
-- Добавлен `content_type=None` - Steam иногда отдаёт JSON с "неправильным" заголовком `Content-Type`, без этого исправления запрос падал с ошибкой
-
-- `return_exceptions=True` в `asyncio.gather` - если один регион недоступен, остальные всё равно обрабатываются
-
-- Логика поиска скидок, арбитража и формат сообщений в Telegram **не менялись** - изменился только способ выполнения запросов (синхронный -> асинхронный).
-
-- README стал более информативным
-
-# Важное замечание
+## Важное замечание
 
 Steam не предоставляет официального API для этого функционала - используется
 парсинг публичной страницы поиска (`store.steampowered.com/search`). Если Valve
@@ -178,10 +174,12 @@ Steam не предоставляет официального API для это
 нужно проверить и обновить CSS-селекторы в файле `steam_api.py`, в функции
 `_parse_results_html`.
 
-# Важная информация
+## Важная информация
 
 Если вы нашли баг, обязательно сообщите о нём автору!
 
-MIT License - указывайте автора.
+### 📜 Лицензия
+
+Этот проект распространяется под лицензией MIT. Подробности смотрите в файле [LICENSE](LICENSE).
 
 Автор - Ch1zheo

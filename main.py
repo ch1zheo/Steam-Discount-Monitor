@@ -1,5 +1,3 @@
-# main.py - главный скрипт.
-
 import sys
 import asyncio
 
@@ -14,8 +12,6 @@ from telegram_notifier import send_message
 from storage import load_state, save_state, set_discount, remove_discount, should_notify
 
 async def collect_all_regions(session: aiohttp.ClientSession) -> dict:
-    """Возвращает {appid: {region_code: game_info}} по всем регионам.
-    Регионы опрашиваются ПАРАЛЛЕЛЬНО"""
     regions_items = list(config.REGIONS.items())
     tasks = [
         fetch_discounted_games(
@@ -29,7 +25,6 @@ async def collect_all_regions(session: aiohttp.ClientSession) -> dict:
     ]
 
     print(f"[main] Проверяю регионы ({', '.join(cc for cc, _ in regions_items)}) параллельно...")
-    # return_exceptions=True - чтобы ошибка в одном регионе не обрушила остальные
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     by_appid = {}
@@ -45,26 +40,22 @@ async def collect_all_regions(session: aiohttp.ClientSession) -> dict:
     return by_appid
 
 async def build_notifications(by_appid: dict, state: dict, session: aiohttp.ClientSession) -> list:
-    """Формирует уведомления только для НОВЫХ или ИЗМЕНИВШИХСЯ скидок."""
     messages = []
 
     for appid, regions_data in by_appid.items():
         appid_key = str(appid)
         name = regions_data[next(iter(regions_data))]["name"]
 
-        # Собираем текущие скидки по регионам
         current_regions = {}
         for cc, g in regions_data.items():
             if g["discount_percent"] >= config.MIN_DISCOUNT_PERCENT:
                 current_regions[cc] = g["discount_percent"]
 
-        # Проверяем, какие скидки появились или изменились
         new_regions = {}
         for cc, discount in current_regions.items():
             if should_notify(state, appid_key, cc, discount):
                 new_regions[cc] = discount
 
-        # Формируем сообщение для новых / изменившихся скидок
         if new_regions:
             region_info = []
             for cc in ("ru", "ua", "kz"):
@@ -90,18 +81,15 @@ async def build_notifications(by_appid: dict, state: dict, session: aiohttp.Clie
 
             msg = f"<b> • {name}</b>\n" + "\n".join(region_info)
 
-            # Проверяем арбитраж (если он есть)
             arbitrage_text = await check_arbitrage(regions_data, state, appid_key, session)
             if arbitrage_text:
                 msg += f"\n\n{arbitrage_text}"
 
             messages.append(msg)
 
-        # Обновляем state (сохраняем все текущие скидки)
         for cc, discount in current_regions.items():
             set_discount(state, appid_key, cc, discount, name)
 
-        # Удаляем скидки, которых больше нет
         saved_regions = state.get(appid_key, {}).get("regions", {})
         for cc in list(saved_regions.keys()):
             if cc not in current_regions:
@@ -111,8 +99,6 @@ async def build_notifications(by_appid: dict, state: dict, session: aiohttp.Clie
 
 async def check_arbitrage(regions_data: dict, state: dict, appid_key: str,
                            session: aiohttp.ClientSession) -> str | None:
-    """Проверяет арбитраж и возвращает текст уведомления."""
-    # Курсы валют для всех регионов игры запрашиваются параллельно
     ccs = list(regions_data.keys())
     usd_values = await asyncio.gather(*[
         to_usd(session, regions_data[cc]["final_price"], regions_data[cc]["currency"])
@@ -163,8 +149,6 @@ async def run_once(session: aiohttp.ClientSession, bot: Bot):
         print(f"[main] Найдено {len(messages)} уведомлений, отправляю в Telegram...")
         for msg in messages:
             await send_message(bot, config.TELEGRAM_CHAT_ID, msg)
-            # Telegram ограничивает ~1 сообщение/сек в один и тот же чат - задержка обязательна,
-            # иначе часть сообщений будет отклонена с ошибкой "Too Many Requests"
             await asyncio.sleep(1)
 
     save_state(state)
@@ -179,8 +163,6 @@ async def main():
         default=DefaultBotProperties(parse_mode="HTML"),
     )
 
-    # Одна aiohttp-сессия на весь процесс: переиспользует TCP-соединения (keep-alive),
-    # что заметно быстрее, чем создавать новую сессию на каждый запрос
     async with aiohttp.ClientSession() as session:
         try:
             while True:

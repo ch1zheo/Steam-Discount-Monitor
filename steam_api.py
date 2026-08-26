@@ -1,5 +1,3 @@
-# Получение данных о скидках Steam по разным регионам.
-
 import re
 import asyncio
 from typing import List, Dict, Optional
@@ -20,16 +18,6 @@ HEADERS = {
 async def fetch_discounted_games(session: aiohttp.ClientSession, cc: str, lang: str = "russian",
                                   page_size: int = 100, max_pages: int = 5,
                                   request_delay: float = 1.0) -> List[Dict]:
-    """ Возвращает список игр со скидкой для региона cc (например 'ru', 'ua', 'kz').
-    Каждый элемент:
-    {
-        "appid": int,
-        "name": str,
-        "discount_percent": int,
-        "original_price": float | None,
-        "final_price": float | None,
-        "region": str,
-    } """
     games = []
     seen_appids = set()
 
@@ -52,8 +40,6 @@ async def fetch_discounted_games(session: aiohttp.ClientSession, cc: str, lang: 
                 timeout=aiohttp.ClientTimeout(total=15),
             ) as resp:
                 resp.raise_for_status()
-                # content_type=None - Steam иногда отдаёт JSON с "неправильным" Content-Type,
-                # без этого aiohttp кинет ContentTypeError вместо парсинга
                 data = await resp.json(content_type=None)
         except (aiohttp.ClientError, asyncio.TimeoutError, ValueError) as e:
             print(f"[steam_api] Ошибка запроса region={cc}, start={start}: {e}")
@@ -81,7 +67,6 @@ async def fetch_discounted_games(session: aiohttp.ClientSession, cc: str, lang: 
     return games
 
 def _parse_results_html(html: str, cc: str) -> List[Dict]:
-    """Парсит HTML-фрагмент результатов поиска Steam."""
     soup = BeautifulSoup(html, "html.parser")
     rows = soup.select("a.search_result_row")
     results = []
@@ -137,7 +122,6 @@ def _parse_results_html(html: str, cc: str) -> List[Dict]:
     return results
 
 def _price_to_float(price_el) -> Optional[float]:
-    """Извлекает число из элемента с ценой."""
     if price_el is None:
         return None
     text = price_el.get_text(strip=True)

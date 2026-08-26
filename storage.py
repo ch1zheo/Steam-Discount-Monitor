@@ -1,15 +1,11 @@
-# Хранилище состояния с долгосрочной памятью.
-
 import json
 import os
 import time
 from typing import Optional, Union
 
-# Константа с именем файла состояния
 STATE_FILE = "state.json"
 
 def load_state(path: str = STATE_FILE) -> dict:
-    """Загружает состояние из JSON-файла с защитой от битых данных."""
     if not os.path.exists(path):
         return {}
 
@@ -42,7 +38,6 @@ def load_state(path: str = STATE_FILE) -> dict:
         return {}
 
 def save_state(state: dict, path: str = STATE_FILE) -> None:
-    """Сохраняет состояние в JSON-файл."""
     cleaned = {}
     for key, value in state.items():
         try:
@@ -61,7 +56,6 @@ def save_state(state: dict, path: str = STATE_FILE) -> None:
         json.dump(cleaned, f, ensure_ascii=False, indent=2)
 
 def get_discount(state: dict, appid: Union[int, str], region: str) -> Optional[int]:
-    """Возвращает сохранённую скидку для игры и региона."""
     appid_key = str(appid)
     if appid_key not in state:
         return None
@@ -71,7 +65,6 @@ def get_discount(state: dict, appid: Union[int, str], region: str) -> Optional[i
     return regions.get(region)
 
 def set_discount(state: dict, appid: Union[int, str], region: str, discount: int, name: str = "") -> None:
-    """Сохраняет скидку для игры и региона."""
     appid_key = str(appid)
     if appid_key not in state:
         state[appid_key] = {
@@ -85,7 +78,6 @@ def set_discount(state: dict, appid: Union[int, str], region: str, discount: int
         state[appid_key]["name"] = name
 
 def remove_discount(state: dict, appid: Union[int, str], region: str) -> None:
-    """Удаляет скидку для игры и региона."""
     appid_key = str(appid)
     if appid_key not in state:
         return
@@ -98,8 +90,6 @@ def remove_discount(state: dict, appid: Union[int, str], region: str) -> None:
         del state[appid_key]
 
 def should_notify(state: dict, appid: Union[int, str], region: str, discount: int) -> bool:
-    """ Проверяет, нужно ли отправлять уведомление.
-    True - если скидка НОВАЯ или ИЗМЕНИЛАСЬ. """
     appid_key = str(appid)
     if appid_key not in state:
         return True
