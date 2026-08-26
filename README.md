@@ -2,6 +2,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/ch1zheo/Steam-Discount-Monitor/graphs/commit-activity)
+[![GitHub release](https://img.shields.io/github/v/release/ch1zheo/Steam-Discount-Monitor)](https://github.com/ch1zheo/Steam-Discount-Monitor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Бот, который следит за скидками в Steam сразу в нескольких регионах (RU / UA / KZ), находит новые или изменившиеся скидки, а также ищет **арбитраж** - случаи, когда одна и та же игра в разных регионах стоит по-разному больше заданного порога. Обо всех находках бот пишет в Telegram.
