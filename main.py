@@ -155,7 +155,7 @@ async def run_once(session: aiohttp.ClientSession, bot: Bot):
 
 async def main():
     if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_CHAT_ID:
-        print("[main] ОШИБКА: не заданы TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID в default.env.example")
+        print("[main] ОШИБКА: не заданы TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID в файле .env")
         sys.exit(1)
 
     bot = Bot(

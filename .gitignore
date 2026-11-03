@@ -1,0 +1,23 @@
+# Secrets and local config
+.env
+*.env
+!.env.example
+
+# Runtime state
+state.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.python-version
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
